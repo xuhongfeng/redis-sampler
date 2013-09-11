@@ -18,7 +18,7 @@ class Sampler(object):
         self.password = password
 
     def _setup(self):
-        self.conn = redis.StrictRedis(host=self.host, port=self.port, db=0)
+        self.conn = redis.StrictRedis(host=self.host, port=self.port, db=0, password=self.password)
         self.dbSize = self.conn.dbsize()
         if not self.sampleSize:
             self.sampleSize = int(0.1 * self.dbSize)
@@ -36,11 +36,8 @@ class Sampler(object):
             return
 
         trie = Trie()
-        """
         for i in range(self.sampleSize):
             key = self.conn.randomkey()
-        """
-        for key in self.conn.keys():
             objInfo = self.conn.debug_object(key)
             objSize = objInfo['serializedlength']
             trie.insert(key, objSize)
