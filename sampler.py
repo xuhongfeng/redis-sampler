@@ -43,11 +43,18 @@ class Sampler(object):
             return
 
         trie = Trie()
-        for i in range(self.sampleSize):
-            key = self.conn.randomkey()
+        def queryKey(key):
             objInfo = self.conn.debug_object(key)
             objSize = objInfo['serializedlength']
             trie.insert(key, objSize)
+        if self.sampleRate >= 1.0:
+            print 'On All Keys Mode'
+            for key in self.conn.keys('*'):
+                queryKey(key)
+        else:
+            for i in range(self.sampleSize):
+                key = self.conn.randomkey()
+                queryKey(key)
         
         def bytesToStr(bytes):
             t = []
